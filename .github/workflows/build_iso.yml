@@ -16,7 +16,7 @@ jobs:
     - name: Install ISO Compilation Tools
       run: |
         sudo apt-get update
-        sudo apt-get install -y debootstrap squashfs-tools xorriso syslinux isolinux mtools syslinux-utils
+        sudo apt-get install -y debootstrap squashfs-tools xorriso grub-pc-bin grub-common mtools
 
     - name: Set Executable Permissions
       run: |
