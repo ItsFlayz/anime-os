@@ -16,23 +16,12 @@ jobs:
     - name: Install ISO Compilation Tools
       run: |
         sudo apt-get update
-        sudo apt-get install -y debootstrap squashfs-tools xorriso syslinux isolinux mtools
+        sudo apt-get install -y debootstrap squashfs-tools xorriso syslinux isolinux mtools syslinux-utils
 
     - name: Set Executable Permissions
       run: |
         chmod +x main_builder.sh
         chmod +x scripts/*.sh
-
-    - name: Initialize Base Rootfs Workspace
-      run: |
-        sudo ./scripts/rootfs_builder.sh
-
-    - name: Stage System Configurations
-      run: |
-        sudo ./scripts/desktop_setup.sh
-        sudo ./scripts/desktop_theme_config.sh
-        sudo ./scripts/security_toolkit.sh
-        sudo ./scripts/ram_optimizer.sh
 
     - name: Run ISO Compilation Script
       run: |
