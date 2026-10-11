@@ -1,19 +1,14 @@
 #!/bin/bash
+set -e
 
 echo "=========================================="
-echo "    Anime OS - Security Toolkit Installer "
+echo "    Anime OS - Security Toolkit           "
 echo "=========================================="
 
-echo "[*] Selecting lightweight pentest & networking utilities..."
+ROOTFS_DIR="rootfs"
 
-TOOL_LIST="nmap netcat-openbsd tcpdump dnsutils curl wget git"
+# Install security tools
+chroot "$ROOTFS_DIR" apt-get install -y --no-install-recommends \
+    nmap wireshark tshark aircrack-ng curl wget net-tools
 
-echo "[+] Target tools to bundle: $TOOL_LIST"
-echo "[*] Generating pre-flight installation manifest..."
-
-# Writing tools to a config file for ISO builder to grab later
-echo "$TOOL_LIST" > security_manifest.txt
-
-echo "------------------------------------------"
-echo "[+] Security manifest locked successfully!"
-echo "[!] These tools will be baked into your custom ISO."
+echo "[+] Security tools installed successfully!"

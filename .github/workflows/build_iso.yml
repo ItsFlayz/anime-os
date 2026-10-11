@@ -2,7 +2,7 @@ name: Anime OS Cloud ISO Builder
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -10,36 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Install ISO Compilation Tools
+    - name: Install Build Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y debootstrap squashfs-tools xorriso grub-pc-bin grub-common mtools
+        sudo apt-get install -y debootstrap squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools
 
-    - name: Set Executable Permissions
+    - name: Build Full RootFS
       run: |
-        chmod +x main_builder.sh
-        chmod +x scripts/*.sh
+        sudo bash scripts/rootfs_builder.sh
+        sudo bash scripts/desktop_setup.sh
+        sudo bash scripts/security_toolkit.sh
 
-    - name: Build Full Debian Rootfs Environment
+    - name: Create ISO Image
       run: |
-        sudo ./scripts/rootfs_builder.sh
+        sudo bash scripts/iso_builder.sh
 
-    - name: Inject Anime Theme & Security Tools
-      run: |
-        sudo ./scripts/desktop_setup.sh
-        sudo ./scripts/desktop_theme_config.sh
-        sudo ./scripts/security_toolkit.sh
-        sudo ./scripts/ram_optimizer.sh
-
-    - name: Compile Final ISO File
-      run: |
-        sudo ./scripts/iso_builder.sh
-
-    - name: Upload Final Anime OS ISO Artifact
+    - name: Upload ISO Artifact
       uses: actions/upload-artifact@v4
       with:
         name: AnimeOS-v1.0-x86_64-Full
-        path: iso_build/
+        path: build/AnimeOS-v1.0-x86_64.iso
+        if-no-files-found: error

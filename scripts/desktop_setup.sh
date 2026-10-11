@@ -1,17 +1,24 @@
 #!/bin/bash
+set -e
 
 echo "=========================================="
-echo "  Anime OS - Lightweight DE Config (Openbox/LXDE)"
+echo "    Anime OS - Desktop & GUI Setup        "
 echo "=========================================="
 
-echo "[*] Selecting lightweight display server & desktop packages..."
+ROOTFS_DIR="rootfs"
 
-# Lightweight packages for 4GB RAM hardware
-DE_PACKAGES="xorg openbox lxde-core lightdm tint2 pcmanfm obconf"
+# Install Openbox GUI, Tint2 panel, Feh (wallpaper manager) & Terminal
+chroot "$ROOTFS_DIR" apt-get install -y --no-install-recommends \
+    xorg openbox tint2 feh lxterminal neofetch
 
-echo "[+] Target Desktop Stack: $DE_PACKAGES"
-echo "$DE_PACKAGES" > desktop_manifest.txt
+# Setup default wallpaper & autostart configs
+mkdir -p "$ROOTFS_DIR/etc/skel/.config/openbox"
+cat << 'AUTOS_EOF' > "$ROOTFS_DIR/etc/skel/.config/openbox/autostart"
+tint2 &
+feh --bg-scale /usr/share/backgrounds/anime.jpg &
+neofetch
+AUTOS_EOF
 
-echo "------------------------------------------"
-echo "[+] Openbox/LXDE manifest locked successfully!"
-echo "[!] GUI environment will be baked into the ISO."
+chmod +x "$ROOTFS_DIR/etc/skel/.config/openbox/autostart"
+
+echo "[+] Desktop & Customization setup completed!"
