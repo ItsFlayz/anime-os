@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install ISO Compilation Tools
       run: |
@@ -35,7 +35,7 @@ jobs:
         sudo ./scripts/iso_builder.sh
 
     - name: Upload ISO Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: AnimeOS-v1.0-x86_64
         path: iso_build/
