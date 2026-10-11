@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_menu xmlns="http://openbox.org/3.4/menu">
+  <menu id="root-menu" label="Anime OS">
+    <item label="Terminal"><action name="Execute"><execute>x-terminal-emulator</execute></action></item>
+    <item label="File Manager"><action name="Execute"><execute>pcmanfm</execute></action></item>
+    <separator />
+    <menu id="hacking-tools" label="Cybersecurity Tools">
+      <item label="Nmap Scanner"><action name="Execute"><execute>x-terminal-emulator -e nmap</execute></action></item>
+      <item label="Wireshark"><action name="Execute"><execute>wireshark</execute></action></item>
+      <item label="Burp Suite"><action name="Execute"><execute>burpsuite</execute></action></item>
+      <item label="Metasploit Console"><action name="Execute"><execute>x-terminal-emulator -e msfconsole</execute></action></item>
+    </menu>
+    <separator />
+    <item label="Exit System"><action name="Execute"><execute>openbox --exit</execute></action></item>
+  </menu>
+</openbox_menu>

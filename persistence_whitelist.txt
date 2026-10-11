@@ -1,0 +1,3 @@
+/home/user/Desktop
+/home/user/Documents
+/etc/anime_os_config

@@ -1,0 +1,1 @@
+nmap netcat-openbsd tcpdump dnsutils curl wget git burpsuite sqlmap hydra wireshark hashcat john nikto dirb metasploit-framework aircrack-ng

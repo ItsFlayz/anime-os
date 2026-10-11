@@ -1,0 +1,1 @@
+xorg openbox lxde-core lightdm tint2 pcmanfm obconf
