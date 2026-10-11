@@ -23,6 +23,10 @@ jobs:
         chmod +x main_builder.sh
         chmod +x scripts/*.sh
 
+    - name: Initialize Base Rootfs Workspace
+      run: |
+        sudo ./scripts/rootfs_builder.sh
+
     - name: Stage System Configurations
       run: |
         sudo ./scripts/desktop_setup.sh
