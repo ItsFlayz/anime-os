@@ -32,8 +32,8 @@ menuentry "Anime OS Live (x86_64)" {
 }
 GRUB_EOF
 
-# Dummy Kernel and Initrd if missing to allow ISO completion
-touch "$LIVE_DIR/vmlinuz" "$LIVE_DIR/initrd.img"
+cp -L "$(ls rootfs/boot/vmlinuz-* | sort -V | tail -n1)" "$LIVE_DIR/vmlinuz"
+cp -L "$(ls rootfs/boot/initrd.img-* | sort -V | tail -n1)" "$LIVE_DIR/initrd.img"
 
 echo "[*] Step 3: Compiling Bootable ISO Image..."
 grub-mkrescue -o "$BUILD_DIR/AnimeOS-v1.0-x86_64.iso" "$WORK_DIR"
