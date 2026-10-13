@@ -7,11 +7,9 @@ echo "=========================================="
 
 ROOTFS_DIR="rootfs"
 
-# Install Openbox GUI, Tint2 panel, Feh (wallpaper manager) & Terminal
 chroot "$ROOTFS_DIR" apt-get install -y --no-install-recommends \
-    xorg openbox tint2 feh lxterminal neofetch
+    xorg xinit openbox tint2 feh lxterminal neofetch
 
-# Setup default wallpaper & autostart configs
 mkdir -p "$ROOTFS_DIR/etc/skel/.config/openbox"
 cat << 'AUTOS_EOF' > "$ROOTFS_DIR/etc/skel/.config/openbox/autostart"
 tint2 &
@@ -20,5 +18,10 @@ neofetch
 AUTOS_EOF
 
 chmod +x "$ROOTFS_DIR/etc/skel/.config/openbox/autostart"
+
+echo "exec openbox-session" > "$ROOTFS_DIR/etc/skel/.xinitrc"
+
+chroot "$ROOTFS_DIR" bash -c 'echo "root:anime" | chpasswd'
+chroot "$ROOTFS_DIR" bash -c 'useradd -m -s /bin/bash anime && echo "anime:anime" | chpasswd'
 
 echo "[+] Desktop & Customization setup completed!"
