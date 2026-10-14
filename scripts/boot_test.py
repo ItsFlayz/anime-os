@@ -43,10 +43,13 @@ try:
     print("\n[+] Logged in as root. Starting GUI on a real VT via openvt...")
 
     # openvt gives X a genuine VT (like tty1 on real hardware/Limbo),
-    # instead of the serial line we're controlling it from.
+    # instead of the serial line we're controlling it from. We run this
+    # as root because a su'd-into session in this CI serial setup fails
+    # Xorg.wrap's VT ownership check even though a real console login
+    # (as confirmed manually on Limbo) works fine for the 'anime' user.
     # 'timeout 45' makes sure this returns even if X keeps running.
     child.sendline(
-        'timeout 45 openvt -s -w -- su - anime -c "startx > /tmp/x.log 2>&1"'
+        'timeout 45 openvt -s -w -- bash -c "startx > /tmp/x.log 2>&1"'
     )
     child.expect(r"#\s*$", timeout=90)
 
