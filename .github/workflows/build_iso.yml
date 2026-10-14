@@ -10,35 +10,64 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Install Build Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y debootstrap squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools
+      - name: Install Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debootstrap squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools
 
-    - name: Build Full RootFS
-      run: |
-        sudo bash scripts/rootfs_builder.sh
-        sudo bash scripts/desktop_setup.sh
-        sudo bash scripts/security_toolkit.sh
+      - name: Build Full RootFS
+        run: |
+          sudo bash scripts/rootfs_builder.sh
+          sudo bash scripts/desktop_setup.sh
+          sudo bash scripts/security_toolkit.sh
 
-    - name: Create ISO Image
-      run: |
-        sudo bash scripts/iso_builder.sh
+      - name: Create ISO Image
+        run: |
+          sudo bash scripts/iso_builder.sh
 
-    - name: Upload ISO Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: AnimeOS-v1.0-x86_64-Full
-        path: iso_build/AnimeOS-v1.0-x86_64.iso
-        if-no-files-found: error
+      - name: Upload ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnimeOS-v1.0-x86_64-Full
+          path: iso_build/AnimeOS-v1.0-x86_64.iso
+          if-no-files-found: error
 
-    - name: Publish Release
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: v1.0
-        files: iso_build/AnimeOS-v1.0-x86_64.iso
+  boot-test:
+    needs: build-iso
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install QEMU and test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-x86 xorriso python3-pip
+          pip install --break-system-packages pexpect
+
+      - name: Download ISO artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: AnimeOS-v1.0-x86_64-Full
+          path: .
+
+      - name: Extract kernel and initrd from ISO
+        run: |
+          mkdir -p extracted
+          xorriso -osirrox on -indev AnimeOS-v1.0-x86_64.iso \
+            -extract /live/vmlinuz extracted/vmlinuz \
+            -extract /live/initrd.img extracted/initrd.img
+
+      - name: Boot test in QEMU (headless serial console)
+        run: python3 scripts/boot_test.py
+
+      - name: Upload boot test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: boot-test-log
+          path: boot_test_full.log
