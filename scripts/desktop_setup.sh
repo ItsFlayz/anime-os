@@ -12,7 +12,7 @@ chroot "$ROOTFS_DIR" apt-get install -y --no-install-recommends \
     xorg xinit openbox tint2 feh lxterminal neofetch x11-xserver-utils \
     plymouth plymouth-themes \
     arc-theme papirus-icon-theme \
-    lxappearance
+    lxappearance kbd
 
 # ---------- Security tools ----------
 chroot "$ROOTFS_DIR" apt-get install -y --no-install-recommends \

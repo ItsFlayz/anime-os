@@ -35,27 +35,34 @@ try:
     print("\n[*] Waiting for login prompt...")
     child.expect("login:", timeout=240)
 
-    child.sendline("anime")
+    # Log in as root so we can allocate a real VT with openvt.
+    child.sendline("root")
     child.expect("Password:", timeout=30)
     child.sendline("anime")
-    child.expect(r"\$\s*$", timeout=30)
-    print("\n[+] Logged in. Starting GUI (startx)...")
+    child.expect(r"#\s*$", timeout=30)
+    print("\n[+] Logged in as root. Starting GUI on a real VT via openvt...")
 
-    child.sendline("startx > /tmp/x.log 2>&1 &")
-    time.sleep(45)
-
-    child.sendline("")
-    child.sendline("echo BOOT_TEST_MARKER_DONE")
-    child.expect("BOOT_TEST_MARKER_DONE", timeout=30)
+    # openvt gives X a genuine VT (like tty1 on real hardware/Limbo),
+    # instead of the serial line we're controlling it from.
+    # 'timeout 45' makes sure this returns even if X keeps running.
+    child.sendline(
+        'timeout 45 openvt -s -w -- su - anime -c "startx > /tmp/x.log 2>&1"'
+    )
+    child.expect(r"#\s*$", timeout=90)
 
     print("\n[*] Dumping startx output (/tmp/x.log):")
     child.sendline("cat /tmp/x.log")
-    time.sleep(3)
+    child.expect(r"#\s*$", timeout=30)
+    output = child.before
 
-    child.sendline("echo BOOT_TEST_CAT_DONE")
-    child.expect("BOOT_TEST_CAT_DONE", timeout=30)
+    child.sendline("echo BOOT_TEST_DONE")
+    child.expect("BOOT_TEST_DONE", timeout=30)
 
-    print("\n[+] Boot test completed: login + startx attempted successfully.")
+    if "Fatal server error" in output or "Permission denied" in output:
+        print("\n[!] X server reported a fatal error. See log above.")
+        exit_code = 1
+    else:
+        print("\n[+] Boot test completed: X started on a real VT without a fatal error.")
 
 except pexpect.exceptions.TIMEOUT:
     print("\n[!] Boot test TIMED OUT waiting for expected output. See log above for where it stopped.")
